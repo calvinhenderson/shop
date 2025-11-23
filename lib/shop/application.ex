@@ -12,6 +12,8 @@ defmodule Shop.Application do
       Shop.Repo,
       {DNSCluster, query: Application.get_env(:shop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Shop.PubSub},
+      Shop.Vault.Cloak,
+
       # Start a worker by calling: Shop.Worker.start_link(arg)
       # {Shop.Worker, arg},
       # Start to serve requests, typically the last entry

@@ -21,6 +21,29 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() == :prod do
+  vault_hash_base =
+    System.get_env("VAULT_HASH_BASE") ||
+      raise """
+      environment variable VAULT_HASH_BASE is missing.
+      You can generate one by calling: mix phx.gen.secret
+      """
+
+  config :shop, Shop.Vault.BlindIndex,
+    algorithm: :sha512,
+    secret: Base.decode64!(vault_hash_base)
+
+  vault_key_base =
+    System.get_env("VAULT_KEY_BASE") ||
+      raise """
+      environment variable VAULT_KEY_BASE is missing.
+      You can generate one by calling: iex> 32 |> :crypto.strong_rand_bytes() |> Base.encode64()
+      """
+
+  config :shop, Shop.Vault.Cloak,
+    ciphers: [
+      default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: Base.decode64!(vault_key_base)}
+    ]
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """

@@ -9,7 +9,24 @@ import Config
 
 config :shop,
   ecto_repos: [Shop.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [binary_id: true, timestamp_type: :utc_datetime]
+
+# Configures the vault
+config :shop, Shop.Vault.BlindIndex,
+  algorithm: :sha256,
+  secret:
+    Base.decode64!(
+      "Nzg4MmU5NmE4YTdmNzhmODg2OGI2ODI3ZGJlYTcxYjc5ZGU0OGIyMjQwNjIxNGVhY2NmZTgwN2IwNjZjNDczYQo="
+    )
+
+vault_key_base =
+  Base.decode64!("hJOcTf2xAzwHR4kRMii6c9Xbp8YzNKe3CJMuuNO9puM=")
+
+config :shop, Shop.Vault.Cloak,
+  json_library: Jason,
+  ciphers: [
+    default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: vault_key_base, iv_length: 12}
+  ]
 
 # Configures the endpoint
 config :shop, ShopWeb.Endpoint,
