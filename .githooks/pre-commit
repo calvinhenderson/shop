@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+set -xeuo pipefail
+
+mix format --check-formatted
+mix credo
+mix test
