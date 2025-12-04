@@ -6,6 +6,8 @@ defmodule Shop.Accounts.User do
     authorizers: [Ash.Policy.Authorizer],
     extensions: [AshAuthentication]
 
+  @user_roles [:admin, :agent, :customer]
+
   authentication do
     add_ons do
       log_out_everywhere do
@@ -87,12 +89,28 @@ defmodule Shop.Accounts.User do
     end
   end
 
+  validations do
+    one_of(:role, @user_roles)
+  end
+
   attributes do
     uuid_primary_key :id
 
     attribute :email, :ci_string do
       allow_nil? false
       public? true
+    end
+
+    attribute :role, :atom do
+      allow_nil? false
+      public? true
+      default :customer
+    end
+
+    attribute :archived_at, :naive_datetime do
+      allow_nil? true
+      public? true
+      default nil
     end
   end
 
